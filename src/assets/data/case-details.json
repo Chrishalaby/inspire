@@ -1,0 +1,70 @@
+{
+  "id": "1",
+  "documents": {
+    "columns": [
+      { "field": "docType", "header": "Document Type" },
+      { "field": "description", "header": "Description" },
+      { "field": "fileName", "header": "File Name" },
+      { "field": "actions", "header": "Actions" }
+    ],
+    "items": [
+      {
+        "id": "doc1",
+        "docType": "Policy",
+        "description": "Policy Document",
+        "fileName": "policy.pdf",
+        "fileUrl": "assets/sample.pdf",
+        "coordinates": [
+          { "x": 150, "y": 200 },
+          { "x": 300, "y": 450 }
+        ]
+      }
+    ]
+  },
+  "notes": [
+    {
+      "id": "note1",
+      "content": "Initial review completed",
+      "lastUpdated": "2023-11-20"
+    }
+  ],
+  "dynamicTabs": [
+    {
+      "id": "tab1",
+      "label": "Client Information",
+      "type": "form",
+      "formFields": [
+        {
+          "name": "clientName",
+          "label": "Client Name",
+          "value": "ABC Corp",
+          "type": "text",
+          "documentRef": { "docId": "doc1", "x": 150, "y": 200 }
+        },
+        {
+          "name": "contactEmail",
+          "label": "Contact Email",
+          "value": "info@abc.com",
+          "type": "email"
+        }
+      ]
+    },
+    {
+      "id": "tab2",
+      "label": "Policy Details",
+      "type": "table",
+      "columns": [
+        { "field": "policyNumber", "header": "Policy Number" },
+        { "field": "startDate", "header": "Start Date" },
+        { "field": "endDate", "header": "End Date" }
+      ],
+      "data": [
+        {
+          "policyNumber": "POL-123",
+          "startDate": "2023-01-01",
+          "endDate": "2023-12-31"
+        }
+      ]
+    }
+  ]
+}

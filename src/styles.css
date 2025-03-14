@@ -1,0 +1,23 @@
+/* Import PrimeNG theme */
+@import "primeng/resources/themes/lara-light-blue/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+@import "primeflex/primeflex.css";
+
+/* Global styles */
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.document-highlight {
+  background-color: rgba(255, 255, 0, 0.4);
+  border: 2px solid yellow;
+}

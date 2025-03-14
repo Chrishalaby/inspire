@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "id": "accurisk",
+      "name": "AccuRisk",
+      "icon": "pi pi-folder",
+      "children": [
+        {
+          "id": "cases",
+          "name": "Cases",
+          "icon": "pi pi-table"
+        }
+      ]
+    }
+  ]
+}

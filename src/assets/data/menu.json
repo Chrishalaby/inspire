@@ -1,0 +1,16 @@
+{
+  "menu": [
+    {
+      "id": "accurisk",
+      "label": "AccuRisk",
+      "icon": "pi pi-fw pi-briefcase",
+      "children": [
+        {
+          "id": "cases",
+          "label": "Cases",
+          "icon": "pi pi-fw pi-folder"
+        }
+      ]
+    }
+  ]
+}

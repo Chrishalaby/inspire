@@ -1,0 +1,87 @@
+{
+  "id": "1",
+  "referenceId": "REF-2023-001",
+  "documents": {
+    "columns": [
+      { "field": "actions", "header": "Actions" },
+      { "field": "type", "header": "Doc Type" },
+      { "field": "description", "header": "Doc Description" },
+      { "field": "fileName", "header": "File Name" }
+    ],
+    "data": [
+      {
+        "id": "doc1",
+        "type": "Application",
+        "description": "Initial Application Form",
+        "fileName": "application.pdf",
+        "fileUrl": "assets/mock-data/sample.pdf",
+        "dataPoints": [
+          {
+            "fieldName": "client_name",
+            "value": "John Doe",
+            "x": 100,
+            "y": 200,
+            "width": 150,
+            "height": 30
+          }
+        ]
+      }
+    ]
+  },
+  "notes": [
+    {
+      "id": "note1",
+      "content": "Initial review completed",
+      "createdBy": "Jane Smith",
+      "createdDate": "2023-11-16",
+      "lastUpdated": "2023-11-16"
+    }
+  ],
+  "rightTabs": [
+    {
+      "id": "customerInfo",
+      "title": "Customer Info",
+      "type": "form",
+      "config": {
+        "fields": [
+          {
+            "id": "name",
+            "label": "Name",
+            "type": "text",
+            "value": "John Doe",
+            "documentRef": {
+              "documentId": "doc1",
+              "x": 100,
+              "y": 200
+            }
+          },
+          {
+            "id": "email",
+            "label": "Email",
+            "type": "email",
+            "value": "john.doe@example.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beneficiaries",
+      "title": "Beneficiaries",
+      "type": "table",
+      "config": {
+        "columns": [
+          { "field": "name", "header": "Name" },
+          { "field": "relation", "header": "Relation" },
+          { "field": "percentage", "header": "Percentage" }
+        ],
+        "data": [
+          {
+            "name": "Jane Doe",
+            "relation": "Spouse",
+            "percentage": 100
+          }
+        ]
+      }
+    }
+  ]
+}

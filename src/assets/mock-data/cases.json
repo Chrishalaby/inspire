@@ -1,0 +1,30 @@
+{
+  "columns": [
+    { "field": "referenceId", "header": "Reference ID" },
+    { "field": "dueDate", "header": "Due Date" },
+    { "field": "lives", "header": "Lives" },
+    { "field": "sla", "header": "SLA" },
+    { "field": "receivedDate", "header": "Received Date" },
+    { "field": "broker", "header": "Broker" }
+  ],
+  "data": [
+    {
+      "id": "1",
+      "referenceId": "REF-2023-001",
+      "dueDate": "2023-12-31",
+      "lives": 150,
+      "sla": "Priority",
+      "receivedDate": "2023-11-15",
+      "broker": "ABC Insurance"
+    },
+    {
+      "id": "2",
+      "referenceId": "REF-2023-002",
+      "dueDate": "2023-12-15",
+      "lives": 200,
+      "sla": "Standard",
+      "receivedDate": "2023-11-10",
+      "broker": "XYZ Brokers"
+    }
+  ]
+}
