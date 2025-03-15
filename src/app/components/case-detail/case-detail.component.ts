@@ -50,39 +50,32 @@ import { NotesTabComponent } from './notes-tab.component';
       </div>
 
       <div class="case-container">
-        <p-splitter
-          [style]="{ height: '100%' }"
-          [panelSizes]="[40, 60]"
-          [minSizes]="[20, 20]"
-        >
+        <p-splitter [style]="{ height: '100%' }">
           <ng-template pTemplate="panel">
             <div class="p-2">
               <p-tabView>
                 <!-- Documents Tab -->
                 <p-tabPanel header="Documents">
-                  <ng-container
-                    *ngIf="!selectedDocument(); else documentViewer"
+                  @if(!selectedDocument()){
+                  <app-data-table
+                    [tableColumns]="documentColumns()"
+                    [tableData]="documents()"
+                    [tableLoading]="loading()"
+                    (rowClick)="viewDocument($event)"
                   >
-                    <app-data-table
-                      [tableColumns]="documentColumns()"
-                      [tableData]="documents()"
-                      [tableLoading]="loading()"
-                      (rowClick)="viewDocument($event)"
-                    >
-                    </app-data-table>
-                  </ng-container>
-                  <ng-template #documentViewer>
-                    <div class="mb-3">
-                      <p-button
-                        icon="pi pi-arrow-left"
-                        label="Back to Documents"
-                        (click)="closeDocument()"
-                      ></p-button>
-                    </div>
-                    <app-document-viewer
-                      [document]="selectedDocument()"
-                    ></app-document-viewer>
-                  </ng-template>
+                  </app-data-table>
+                  } @else {
+                  <div class="mb-3">
+                    <p-button
+                      icon="pi pi-arrow-left"
+                      label="Back to Documents"
+                      (click)="closeDocument()"
+                    ></p-button>
+                  </div>
+                  <app-document-viewer
+                    [document]="selectedDocument()"
+                  ></app-document-viewer>
+                  }
                 </p-tabPanel>
 
                 <!-- Notes Tab -->
@@ -102,23 +95,23 @@ import { NotesTabComponent } from './notes-tab.component';
           <ng-template pTemplate="panel">
             <div class="p-2">
               <p-tabView>
-                <ng-container *ngFor="let tab of rightTabs()">
-                  <p-tabPanel [header]="tab.title">
-                    <ng-container [ngSwitch]="tab.type">
-                      <app-dynamic-form
-                        *ngSwitchCase="TabType.FORM"
-                        [config]="tab.config"
-                        (fieldClick)="onFormFieldClick($event)"
-                      >
-                      </app-dynamic-form>
-                      <app-dynamic-table
-                        *ngSwitchCase="TabType.TABLE"
-                        [config]="tab.config"
-                      >
-                      </app-dynamic-table>
-                    </ng-container>
-                  </p-tabPanel>
-                </ng-container>
+                @for (tab of rightTabs(); track $index) {
+                <p-tabPanel [header]="tab.title">
+                  <ng-container [ngSwitch]="tab.type">
+                    <app-dynamic-form
+                      *ngSwitchCase="TabType.FORM"
+                      [config]="tab.config"
+                      (fieldClick)="onFormFieldClick($event)"
+                    >
+                    </app-dynamic-form>
+                    <app-dynamic-table
+                      *ngSwitchCase="TabType.TABLE"
+                      [config]="tab.config"
+                    >
+                    </app-dynamic-table>
+                  </ng-container>
+                </p-tabPanel>
+                }
               </p-tabView>
             </div>
           </ng-template>
@@ -126,19 +119,6 @@ import { NotesTabComponent } from './notes-tab.component';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .container {
-        margin-left: 260px;
-        padding: 20px;
-        width: calc(100% - 260px);
-      }
-
-      .case-container {
-        height: calc(100vh - 140px);
-      }
-    `,
-  ],
 })
 export class CaseDetailComponent implements OnInit {
   private store = inject(Store);
@@ -146,10 +126,11 @@ export class CaseDetailComponent implements OnInit {
   private router = inject(Router);
   private documentService = inject(DocumentService);
 
-  TabType = TabType; // Expose enum to template
+  protected readonly TabType = TabType;
 
-  // Signals from store
-  selectedCase = this.store.selectSignal(AppState.getSelectedCase);
+  protected readonly selectedCase = this.store.selectSignal(
+    AppState.getSelectedCase
+  );
 
   protected readonly documentColumns = this.store.selectSignal(
     AppState.getDocumentColumns

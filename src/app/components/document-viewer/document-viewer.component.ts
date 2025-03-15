@@ -17,10 +17,12 @@ import { Document } from '../../models/document.model';
   imports: [CommonModule],
   template: `
     <div class="document-container">
-      <div *ngIf="loading()" class="flex justify-content-center">
+      @if(loading()){
+      <div class="flex justify-content-center">
         <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
         <span class="ml-2">Loading document...</span>
       </div>
+      }
 
       <iframe
         #docViewer
@@ -31,14 +33,15 @@ import { Document } from '../../models/document.model';
       >
       </iframe>
 
+      @if(activeHighlight()){
       <div
-        *ngIf="activeHighlight()"
         class="highlight-overlay"
         [style.top.px]="activeHighlight()?.y"
         [style.left.px]="activeHighlight()?.x"
         [style.width.px]="activeHighlight()?.width"
         [style.height.px]="activeHighlight()?.height"
       ></div>
+      }
     </div>
   `,
   styles: [

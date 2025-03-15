@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { CardModule } from 'primeng/card';
@@ -24,36 +23,20 @@ import { DataTableComponent } from '../data-table/data-table.component';
       </p-card>
     </div>
   `,
-  styles: [
-    `
-      .container {
-        margin-left: 260px;
-        padding: 20px;
-        width: calc(100% - 260px);
-      }
-    `,
-  ],
 })
-export class CasesListComponent implements OnInit {
-  private store = inject(Store);
-  private router = inject(Router);
+export class CasesListComponent {
+  readonly #store = inject(Store);
+  readonly #router = inject(Router);
 
-  columns = toSignal(this.store.select(AppState.getCaseColumns), {
-    initialValue: [],
-  });
-  cases = toSignal(this.store.select(AppState.getCaseData), {
-    initialValue: [],
-  });
-  loading = toSignal(this.store.select(AppState.getCasesLoading), {
-    initialValue: false,
-  });
-
-  ngOnInit(): void {
-    // Cases should be loaded via sidebar navigation
-    // If accessed directly, we could add a check here to load cases if data is empty
-  }
+  protected readonly columns = this.#store.selectSignal(
+    AppState.getCaseColumns
+  );
+  protected readonly cases = this.#store.selectSignal(AppState.getCaseData);
+  protected readonly loading = this.#store.selectSignal(
+    AppState.getCasesLoading
+  );
 
   onCaseSelected(caseData: any): void {
-    this.router.navigate(['/case', caseData.id]);
+    this.#router.navigate(['/case', caseData.id]);
   }
 }

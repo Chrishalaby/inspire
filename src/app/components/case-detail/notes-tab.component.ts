@@ -97,7 +97,7 @@ import { Note } from '../../models/note.model';
   styles: [
     `
       .notes-container {
-        max-height: 500px;
+        max-height: 80vh;
         overflow-y: auto;
       }
     `,
