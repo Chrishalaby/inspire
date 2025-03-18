@@ -104,6 +104,8 @@ import { InputTextModule } from 'primeng/inputtext';
 })
 export class DynamicFormComponent<T extends { fields?: any[] }> {
   @Output() fieldClick = new EventEmitter<any>();
+  @Output() emptyFieldClick = new EventEmitter<any>();
+
   readonly config = input<any>();
 
   form: FormGroup;
@@ -133,6 +135,9 @@ export class DynamicFormComponent<T extends { fields?: any[] }> {
   onFieldClick(field: any): void {
     if (field.documentRef) {
       this.fieldClick.emit(field);
+    } else {
+      // Emit the emptyFieldClick event when a field without documentRef is clicked
+      this.emptyFieldClick.emit(field);
     }
   }
 

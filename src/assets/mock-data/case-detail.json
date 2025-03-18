@@ -60,6 +60,11 @@
             "label": "Email",
             "type": "email",
             "value": "john.doe@example.com"
+          },
+          {
+            "id": "phone",
+            "label": "Phone",
+            "type": "email"
           }
         ]
       }

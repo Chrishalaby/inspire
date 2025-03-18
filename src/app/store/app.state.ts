@@ -3,7 +3,12 @@ import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { tap } from 'rxjs/operators';
 import { Case } from '../models/case.model';
 import { Document } from '../models/document.model';
-import { ColumnDefinition, DynamicTab } from '../models/dynamic-tab.model';
+import {
+  ColumnDefinition,
+  DynamicTab,
+  FormConfig,
+  TabType,
+} from '../models/dynamic-tab.model';
 import { Note } from '../models/note.model';
 import { SidebarItem } from '../models/sidebar.model';
 import { CaseService } from '../services/case.service';
@@ -12,6 +17,21 @@ import { SidebarService } from '../services/sidebar.service';
 
 export class LoadSidebarItems {
   static readonly type = '[Sidebar] Load Items';
+}
+
+export class UpdateFormField {
+  static readonly type = '[Form] Update Field';
+  constructor(
+    public payload: {
+      fieldId: string;
+      tabId?: string;
+      documentRef: {
+        documentId: string;
+        x: number;
+        y: number;
+      };
+    }
+  ) {}
 }
 
 export class LoadCases {
@@ -42,6 +62,11 @@ export class UpdateNote {
 export class DeleteNote {
   static readonly type = '[Note] Delete Note';
   constructor(public payload: { caseId: string; noteId: string }) {}
+}
+
+export class UpdateDocument {
+  static readonly type = '[App] Update Document';
+  constructor(public document: any) {}
 }
 
 export interface AppStateModel {
@@ -316,5 +341,71 @@ export class AppState {
       },
     });
     console.log('[Action] DeleteNote - Completed');
+  }
+
+  @Action(UpdateDocument)
+  updateDocument(ctx: StateContext<AppStateModel>, action: UpdateDocument) {
+    const state = ctx.getState();
+    const updatedDocuments = state.caseDetail.documents.data.map((doc) =>
+      doc.id === action.document.id ? action.document : doc
+    );
+
+    ctx.patchState({
+      caseDetail: {
+        ...state.caseDetail,
+        documents: {
+          ...state.caseDetail.documents,
+          data: updatedDocuments,
+        },
+      },
+    });
+  }
+
+  @Action(UpdateFormField)
+  updateFormField(ctx: StateContext<AppStateModel>, action: UpdateFormField) {
+    const state = ctx.getState();
+    const updatedTabs = state.caseDetail.rightTabs.map((tab) => {
+      if (
+        tab.type === TabType.FORM &&
+        (action.payload.tabId === undefined || tab.id === action.payload.tabId)
+      ) {
+        // Cast to proper types for type safety
+        const formTab = tab as DynamicTab;
+        const formConfig = formTab.config as FormConfig;
+
+        // Create a new config with updated fields
+        const updatedConfig: FormConfig = {
+          ...formConfig,
+          fields: formConfig.fields.map((field) => {
+            if (field.id === action.payload.fieldId) {
+              // Create a new field object with the documentRef
+              return {
+                ...field,
+                documentRef: action.payload.documentRef,
+              };
+            }
+            return field;
+          }),
+        };
+
+        return {
+          ...tab,
+          config: updatedConfig,
+        };
+      }
+      return tab;
+    });
+
+    ctx.patchState({
+      caseDetail: {
+        ...state.caseDetail,
+        rightTabs: updatedTabs,
+      },
+    });
+
+    console.log('[Action] UpdateFormField - Completed', {
+      fieldId: action.payload.fieldId,
+      documentRef: action.payload.documentRef,
+    });
   }
 }

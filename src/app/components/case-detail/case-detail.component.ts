@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { ButtonModule } from 'primeng/button';
@@ -15,6 +15,8 @@ import {
   DeleteNote,
   LoadCaseDetail,
   SelectDocument,
+  UpdateDocument,
+  UpdateFormField,
   UpdateNote,
 } from '../../store/app.state';
 import { DataTableComponent } from '../data-table/data-table.component';
@@ -74,6 +76,8 @@ import { NotesTabComponent } from './notes-tab.component';
                   </div>
                   <app-document-viewer
                     [document]="selectedDocument()"
+                    [highlightMode]="highlightSelectionMode()"
+                    (areaSelected)="onDocumentAreaSelected($event)"
                   ></app-document-viewer>
                   }
                 </p-tabPanel>
@@ -102,6 +106,7 @@ import { NotesTabComponent } from './notes-tab.component';
                       *ngSwitchCase="TabType.FORM"
                       [config]="tab.config"
                       (fieldClick)="onFormFieldClick($event)"
+                      (emptyFieldClick)="onEmptyFieldClick($event)"
                     >
                     </app-dynamic-form>
                     <app-dynamic-table
@@ -145,6 +150,17 @@ export class CaseDetailComponent implements OnInit {
     AppState.getCaseDetailLoading
   );
 
+  // Add new property to track if we're in highlight selection mode
+  highlightSelectionMode = signal<boolean>(false);
+
+  // Store the field waiting for a highlight
+  private pendingField: {
+    id: string;
+    value?: string;
+    tabId?: string;
+    fieldId?: string;
+  } | null = null;
+
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const caseId = params.get('id');
@@ -180,6 +196,81 @@ export class CaseDetailComponent implements OnInit {
         fieldConfig.documentRef.y
       );
     }
+  }
+
+  // New method to handle empty field clicks
+  onEmptyFieldClick(fieldConfig: any): void {
+    // If no document is selected, prompt the user to select one first
+    if (!this.selectedDocument()) {
+      alert('Please select a document first to add a highlight.');
+      return;
+    }
+
+    // Store the field reference and enable highlight selection mode
+    this.pendingField = {
+      id: fieldConfig.id,
+      value: fieldConfig.value,
+      tabId: fieldConfig.tabId,
+      fieldId: fieldConfig.fieldId,
+    };
+    this.highlightSelectionMode.set(true);
+  }
+
+  // New method to handle document area selection
+  onDocumentAreaSelected(area: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): void {
+    if (!this.pendingField || !this.selectedDocument()) return;
+
+    const documentId = this.selectedDocument()?.id;
+
+    // Return early if documentId is undefined
+    if (!documentId) return;
+
+    // Create a new data point
+    const newDataPoint = {
+      fieldName: this.pendingField.id,
+      value: this.pendingField.value || '',
+      x: area.x,
+      y: area.y,
+      width: area.width,
+      height: area.height,
+    };
+
+    // Update the document with the new data point
+    const updatedDocument = {
+      ...this.selectedDocument(),
+      dataPoints: [
+        ...(this.selectedDocument()?.dataPoints || []),
+        newDataPoint,
+      ],
+    };
+
+    // Create document reference object with non-nullable documentId
+    const documentRef = {
+      documentId, // This is now guaranteed to be a string
+      x: area.x,
+      y: area.y,
+    };
+
+    // Update the document in the store
+    this.store.dispatch(new UpdateDocument(updatedDocument));
+
+    // Update the form field with document reference
+    this.store.dispatch(
+      new UpdateFormField({
+        fieldId: this.pendingField.id,
+        tabId: this.pendingField.tabId,
+        documentRef: documentRef,
+      })
+    );
+
+    // Exit highlight selection mode
+    this.highlightSelectionMode.set(false);
+    this.pendingField = null;
   }
 
   addNote(note: Note): void {
