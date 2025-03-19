@@ -1,0 +1,7 @@
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build]
+  base = "inspire/angular/cache/19.2.4/inspire"
